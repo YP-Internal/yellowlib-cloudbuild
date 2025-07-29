@@ -17,6 +17,13 @@ namespace YellowPanda.CloudBuild
 
         public static void PostBuild(string exportPath)
         {
+            Console.WriteLine("====[ Variáveis de Ambiente - Build ]====");
+            Console.WriteLine($"📦 Repo Name (PLASTIC_REPO)     : {repoName}");
+            Console.WriteLine($"🔢 Build Number (BUILD_REVISION)   : {buildNumber}");
+            Console.WriteLine($"🏢 Org ForeignKey (CORE_PROJECT_ID/[0]) : {orgForeignKey}");
+            Console.WriteLine($"🧩 Project GUID (CORE_PROJECT_ID/[1])  : {projectGuid}");
+            Console.WriteLine("=========================================");
+
             string version = Application.version;
             SendDataToAWSLambda(version, repoName);
         }
