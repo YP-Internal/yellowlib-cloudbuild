@@ -10,8 +10,8 @@ namespace YellowPanda.CloudBuild
 {
     public class PostExportHook
     {
-        static string repoName = HttpUtility.UrlEncode(Environment.GetEnvironmentVariable("PLASTIC_REPO"));
-        static string branchName = HttpUtility.UrlEncode(Environment.GetEnvironmentVariable("SCM_BRANCH"));
+        static string repoName = Environment.GetEnvironmentVariable("PLASTIC_REPO");
+        static string branchName = Environment.GetEnvironmentVariable("SCM_BRANCH");
         static string buildNumber = Environment.GetEnvironmentVariable("BUILD_REVISION");
         static string orgForeignKey = Environment.GetEnvironmentVariable("CORE_PROJECT_ID").Split("/")[0];
         static string projectGuid = Environment.GetEnvironmentVariable("CORE_PROJECT_ID").Split("/")[1];
@@ -27,10 +27,10 @@ namespace YellowPanda.CloudBuild
             Console.WriteLine("=========================================");
 
             string version = Application.version;
-            SendDataToAWSLambda(version, repoName);
+            SendDataToAWSLambda(version);
         }
 
-        static void SendDataToAWSLambda(string version, string projectName)
+        static void SendDataToAWSLambda(string version)
         {
             var url = "https://plwyuwqm28.execute-api.sa-east-1.amazonaws.com/versionMapping";
 
@@ -40,7 +40,6 @@ namespace YellowPanda.CloudBuild
                 version,
                 orgForeignKey,
                 projectGuid,
-                projectName,
                 repoName,
                 branchName
             };
