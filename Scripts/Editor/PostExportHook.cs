@@ -15,6 +15,7 @@ namespace YellowPanda.CloudBuild
         static string buildNumber = Environment.GetEnvironmentVariable("BUILD_REVISION");
         static string orgForeignKey = Environment.GetEnvironmentVariable("CORE_PROJECT_ID").Split("/")[0];
         static string projectGuid = Environment.GetEnvironmentVariable("CORE_PROJECT_ID").Split("/")[1];
+        static string buildTarget = Environment.GetEnvironmentVariable("BUILD_TARGET");
 
         public static void PostBuild(string exportPath)
         {
@@ -24,6 +25,7 @@ namespace YellowPanda.CloudBuild
             Console.WriteLine($"🔢 Build Number (BUILD_REVISION)   : {buildNumber}");
             Console.WriteLine($"🏢 Org ForeignKey (CORE_PROJECT_ID/[0]) : {orgForeignKey}");
             Console.WriteLine($"🧩 Project GUID (CORE_PROJECT_ID/[1])  : {projectGuid}");
+            Console.WriteLine($"📦 Build Target (BUILD_TARGET)     : {buildTarget}");
             Console.WriteLine("=========================================");
 
             string version = Application.version;
@@ -41,7 +43,8 @@ namespace YellowPanda.CloudBuild
                 orgForeignKey,
                 projectGuid,
                 repoName,
-                branchName
+                branchName,
+                buildTarget
             };
 
             string json = JsonConvert.SerializeObject(body);
