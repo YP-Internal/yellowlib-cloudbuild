@@ -11,6 +11,7 @@ namespace YellowPanda.CloudBuild
     public class PostExportHook
     {
         static string repoName = HttpUtility.UrlEncode(Environment.GetEnvironmentVariable("PLASTIC_REPO"));
+        static string branchName = HttpUtility.UrlEncode(Environment.GetEnvironmentVariable("SCM_BRANCH"));
         static string buildNumber = Environment.GetEnvironmentVariable("BUILD_REVISION");
         static string orgForeignKey = Environment.GetEnvironmentVariable("CORE_PROJECT_ID").Split("/")[0];
         static string projectGuid = Environment.GetEnvironmentVariable("CORE_PROJECT_ID").Split("/")[1];
@@ -19,6 +20,7 @@ namespace YellowPanda.CloudBuild
         {
             Console.WriteLine("====[ Variáveis de Ambiente - Build ]====");
             Console.WriteLine($"📦 Repo Name (PLASTIC_REPO)     : {repoName}");
+            Console.WriteLine($"📦 Branch Name (SCM_BRANCH)     : {branchName}");
             Console.WriteLine($"🔢 Build Number (BUILD_REVISION)   : {buildNumber}");
             Console.WriteLine($"🏢 Org ForeignKey (CORE_PROJECT_ID/[0]) : {orgForeignKey}");
             Console.WriteLine($"🧩 Project GUID (CORE_PROJECT_ID/[1])  : {projectGuid}");
@@ -38,7 +40,9 @@ namespace YellowPanda.CloudBuild
                 version,
                 orgForeignKey,
                 projectGuid,
-                projectName
+                projectName,
+                repoName,
+                branchName
             };
 
             string json = JsonConvert.SerializeObject(body);
