@@ -2,7 +2,7 @@
     "name": "games.yellowpanda.yellowlib.cloudbuild",
     "author": "Yellow Panda",
     "displayName": "Yellow Lib - Cloud Build",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "unity": "2022.3",
     "keywords": [],
     "description": "Módulo de Códigos de Cloud Build",

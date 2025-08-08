@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using Codice.Utils;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -19,17 +18,26 @@ namespace YellowPanda.CloudBuild
 
         public static void PostBuild(string exportPath)
         {
-            Console.WriteLine("====[ Variáveis de Ambiente - Build ]====");
-            Console.WriteLine($"📦 Repo Name (PLASTIC_REPO)     : {repoName}");
-            Console.WriteLine($"📦 Branch Name (SCM_BRANCH)     : {branchName}");
-            Console.WriteLine($"🔢 Build Number (BUILD_REVISION)   : {buildNumber}");
-            Console.WriteLine($"🏢 Org ForeignKey (CORE_PROJECT_ID/[0]) : {orgForeignKey}");
-            Console.WriteLine($"🧩 Project GUID (CORE_PROJECT_ID/[1])  : {projectGuid}");
-            Console.WriteLine($"📦 Build Target (BUILD_TARGET)     : {buildTarget}");
-            Console.WriteLine("=========================================");
+            try
+            {
+                Console.WriteLine("====[ Variáveis de Ambiente - Build ]====");
+                Console.WriteLine($"📦 Repo Name (PLASTIC_REPO)     : {repoName}");
+                Console.WriteLine($"📦 Branch Name (SCM_BRANCH)     : {branchName}");
+                Console.WriteLine($"🔢 Build Number (BUILD_REVISION)   : {buildNumber}");
+                Console.WriteLine($"🏢 Org ForeignKey (CORE_PROJECT_ID/[0]) : {orgForeignKey}");
+                Console.WriteLine($"🧩 Project GUID (CORE_PROJECT_ID/[1])  : {projectGuid}");
+                Console.WriteLine($"📦 Build Target (BUILD_TARGET)     : {buildTarget}");
+                Console.WriteLine("=========================================");
 
-            string version = Application.version;
-            SendDataToAWSLambda(version);
+                string version = Application.version;
+                SendDataToAWSLambda(version);
+
+                AutomationHealthCheckClient.SendHealthy();
+            }
+            catch (Exception ex)
+            {
+                AutomationHealthCheckClient.SendError(ex.Message, ex.StackTrace);
+            }
         }
 
         static void SendDataToAWSLambda(string version)
@@ -55,24 +63,16 @@ namespace YellowPanda.CloudBuild
             Console.WriteLine("📤 Enviando payload para versionMapping:");
             Console.WriteLine(json);
 
-            try
-            {
-                var response = client.PostAsync(url, content).GetAwaiter().GetResult();
-                string responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            var response = client.PostAsync(url, content).GetAwaiter().GetResult();
+            string responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-                if (response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine("✅ Version mapping enviado com sucesso!");
-                }
-                else
-                {
-                    Console.WriteLine($"❌ Falha ao enviar version mapping: {response.StatusCode}");
-                    Console.WriteLine(responseBody);
-                }
-            }
-            catch (Exception ex)
+            if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("❌ Erro ao enviar versão: " + ex.Message);
+                Console.WriteLine("✅ Version mapping enviado com sucesso!");
+            }
+            else
+            {
+                throw new Exception($"❌ Falha ao enviar version mapping: {response.StatusCode} | " + responseBody);
             }
         }
     }
