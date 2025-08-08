@@ -35,7 +35,8 @@ public class AutomationHealthCheckClient
         SendHealthCheck(new { 
             status = "healthy",
             projectId = repoName,
-            platform = buildTarget
+            platform = buildTarget,
+            step = "ucb_postExport"
         });
     }
 
@@ -45,7 +46,8 @@ public class AutomationHealthCheckClient
             status = "warning",
             projectId = repoName,
             platform = buildTarget,
-            message
+            message,
+            step = "ucb_postExport"
         });
     }
 
@@ -57,7 +59,8 @@ public class AutomationHealthCheckClient
             projectId = repoName,
             platform = buildTarget,
             message,
-            stack
+            stack,
+            step = "ucb_postExport"
         });
     }
 }
