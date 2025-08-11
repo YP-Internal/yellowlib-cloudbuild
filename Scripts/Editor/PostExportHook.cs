@@ -1,5 +1,7 @@
 ﻿#if UNITY_EDITOR
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using Unity.Plastic.Newtonsoft.Json;
@@ -30,9 +32,39 @@ namespace YellowPanda.CloudBuild
                 Console.WriteLine("=========================================");
 
                 string version = Application.version;
+
                 SendDataToAWSLambda(version);
 
-                AutomationHealthCheckClient.SendHealthy();
+                //Etapa de validação
+                List<string> issues = new List<string>();
+
+                if (string.IsNullOrEmpty(buildNumber))
+                    issues.Add("Build Number Not Set (BUILD_REVISION)");
+
+                if (string.IsNullOrEmpty(version))
+                    issues.Add("Version not set");
+
+                if (string.IsNullOrEmpty(orgForeignKey))
+                    issues.Add("Org Key not set (CORE_PROJECT_ID/[0])");
+
+                if (string.IsNullOrEmpty(repoName))
+                    issues.Add("Repo Name not set (PLASTIC_REPO)");
+
+                if (string.IsNullOrEmpty(branchName))
+                    issues.Add("Branch Name not set (SCM_BRANCH)");
+
+                if (string.IsNullOrEmpty(buildTarget))
+                    issues.Add("Build Target not set (BUILD_TARGET)");
+
+
+                if (issues.Count > 0)
+                {
+                    AutomationHealthCheckClient.SendWarning(string.Join("\n", issues));
+                }
+                else
+                {
+                    AutomationHealthCheckClient.SendHealthy();
+                }
             }
             catch (Exception ex)
             {
