@@ -1,5 +1,4 @@
 ﻿#if UNITY_EDITOR
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -47,8 +46,8 @@ namespace YellowPanda.CloudBuild
                 if (string.IsNullOrEmpty(orgForeignKey))
                     issues.Add("Org Key not set (CORE_PROJECT_ID/[0])");
 
-                if (string.IsNullOrEmpty(repoName))
-                    issues.Add("Repo Name not set (PLASTIC_REPO)");
+                //if (string.IsNullOrEmpty(repoName))
+                //    issues.Add("Repo Name not set (PLASTIC_REPO)");
 
                 if (string.IsNullOrEmpty(branchName))
                     issues.Add("Branch Name not set (SCM_BRANCH)");
@@ -74,7 +73,7 @@ namespace YellowPanda.CloudBuild
 
         static void SendDataToAWSLambda(string version)
         {
-            var url = "https://plwyuwqm28.execute-api.sa-east-1.amazonaws.com/versionMapping";
+            var url = "https://s9ihlq2bij.execute-api.sa-east-1.amazonaws.com/Prod/register-build-complete";
 
             var body = new
             {
@@ -110,3 +109,4 @@ namespace YellowPanda.CloudBuild
     }
 }
 #endif
+
