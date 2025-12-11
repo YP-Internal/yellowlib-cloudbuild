@@ -1,9 +1,9 @@
 ﻿#if UNITY_EDITOR
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 
 namespace YellowPanda.CloudBuild
