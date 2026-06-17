@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
+
 
 namespace YellowPanda.CloudBuild
 {
@@ -16,18 +18,22 @@ namespace YellowPanda.CloudBuild
         static string orgForeignKey = Environment.GetEnvironmentVariable("CORE_PROJECT_ID").Split("/")[0];
         static string projectGuid = Environment.GetEnvironmentVariable("CORE_PROJECT_ID").Split("/")[1];
         static string buildTarget = Environment.GetEnvironmentVariable("BUILD_TARGET");
+        static string buildNumberOffset = Environment.GetEnvironmentVariable("BUILD_NUMBER_OFFSET");
+        static string buildNumberEnv = Environment.GetEnvironmentVariable("UCB_BUILD_NUMBER");
+
 
         public static void PostBuild(string exportPath)
         {
             try
             {
                 Console.WriteLine("====[ Variáveis de Ambiente - Build ]====");
-                Console.WriteLine($"📦 Repo Name (PLASTIC_REPO)     : {repoName}");
-                Console.WriteLine($"📦 Branch Name (SCM_BRANCH)     : {branchName}");
-                Console.WriteLine($"🔢 Build Number (BUILD_REVISION)   : {buildNumber}");
-                Console.WriteLine($"🏢 Org ForeignKey (CORE_PROJECT_ID/[0]) : {orgForeignKey}");
-                Console.WriteLine($"🧩 Project GUID (CORE_PROJECT_ID/[1])  : {projectGuid}");
-                Console.WriteLine($"📦 Build Target (BUILD_TARGET)     : {buildTarget}");
+                Console.WriteLine($"📦 Repo Name (PLASTIC_REPO)                  : {repoName}");
+                Console.WriteLine($"📦 Branch Name (SCM_BRANCH)                  : {branchName}");
+                Console.WriteLine($"🔢 Build Number (BUILD_REVISION)             : {buildNumber}");
+                Console.WriteLine($"🔢 Build Number Offset (BUILD_NUMBER_OFFSET) : {buildNumberOffset}");
+                Console.WriteLine($"🏢 Org ForeignKey (CORE_PROJECT_ID/[0])      : {orgForeignKey}");
+                Console.WriteLine($"🧩 Project GUID (CORE_PROJECT_ID/[1])        : {projectGuid}");
+                Console.WriteLine($"📦 Build Target (BUILD_TARGET)               : {buildTarget}");
                 Console.WriteLine("=========================================");
 
                 string version = Application.version;
@@ -55,6 +61,9 @@ namespace YellowPanda.CloudBuild
                 if (string.IsNullOrEmpty(buildTarget))
                     issues.Add("Build Target not set (BUILD_TARGET)");
 
+                if (!string.IsNullOrEmpty(buildNumberOffset))
+                    SetBuildNumberOffeset(buildNumberOffset,issues);
+
 
                 if (issues.Count > 0)
                 {
@@ -70,6 +79,18 @@ namespace YellowPanda.CloudBuild
                 AutomationHealthCheckClient.SendError(ex.Message, ex.StackTrace);
             }
         }
+
+        static void SetBuildNumberOffeset(string buildOffset, List<string> issues)
+        {
+            if(int.TryParse(buildOffset, out var offSetNumber) && int.TryParse(buildNumberEnv, out var numberEnv))
+            {
+                PlayerSettings.Android.bundleVersionCode = numberEnv + offSetNumber;
+            }
+            else
+            {
+                issues.Add($"Could not parse build numbers. BUILD_NUMBER_OFFSET='{buildOffset}', UCB_BUILD_NUMBER='{buildNumberEnv}'");
+            }
+        } 
 
         static void SendDataToAWSLambda(string version)
         {
@@ -109,4 +130,3 @@ namespace YellowPanda.CloudBuild
     }
 }
 #endif
-
